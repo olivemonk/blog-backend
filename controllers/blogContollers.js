@@ -50,6 +50,15 @@ const updateBlog = async (req, res) => {
     const id = req.params.id;
     const blog = await Blog.findByIdAndUpdate(id, { title, description });
     if (blog) {
+        user = await User.findById(blog.user);
+        user.blogs = user.blogs.map((blog) => {
+            if(blog._id == id){
+                blog.title = title;
+                blog.description = description;
+            }
+            return blog;
+        });
+        await user.save();
       return res
         .status(200)
         .json({ message: "Blog updated successfully", blog });
@@ -67,6 +76,9 @@ const deleteBlog = async (req, res) => {
     const id = req.params.id;
     const blog = await Blog.findByIdAndDelete(id);
     if (blog) {
+        user = await User.findById(blog.user);
+        user.blogs = user.blogs.filter((blog) => blog._id != id);
+        await user.save();
       return res
         .status(200)
         .json({ message: "Blog deleted successfully", blog });
