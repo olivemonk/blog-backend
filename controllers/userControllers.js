@@ -22,7 +22,7 @@ const signupUser = async (req, res) => {
         if(existingUser){
             return res.status(400).json({message: "User already exists"});
         } else {
-            let newUser = new User({name, email, password});
+            let newUser = new User({name, email, password, blogs: []});
             let salt = await bcrypt.genSalt(10);
             newUser.password = await bcrypt.hash(password, salt);
             let savedUser = await newUser.save();
